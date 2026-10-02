@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" font-family="sans-serif">
+<rect width="480" height="320" fill="#ffffff"/>
+<rect x="0" y="252" width="480" height="68" fill="#c8a06a" opacity="0.55"/>
+<rect x="150" y="120" width="300" height="120" rx="6" fill="#efe6d8" stroke="#a87f4c" stroke-width="3"/>
+
+<path d="M150 120 l36 -18 M450 120 l-36 -18" fill="none" stroke="#a87f4c" stroke-width="3"/>
+<path d="M270 168 h60 l-6 52 a14 14 0 0 1 -14 12 h-20 a14 14 0 0 1 -14 -12 Z"
+      fill="#f6f1e8" stroke="#2f4b7c" stroke-width="3"/>
+<ellipse cx="300" cy="168" rx="30" ry="9" fill="#ffffff" opacity="0.7" stroke="#2f4b7c" stroke-width="2.5"/>
+
+<text x="24" y="46" font-size="22" font-weight="700" fill="#3a3a36">作品签收 · 工作室核对</text>
+<text x="24" y="74" font-size="14" fill="#777063">开箱照与寄出照片比对一致，无磕碰</text>
+<rect x="24" y="270" width="118" height="28" rx="14" fill="#4f8a5b"/>
+<text x="83" y="289" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">去程·已签收</text>
+</svg>

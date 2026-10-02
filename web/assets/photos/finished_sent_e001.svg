@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" font-family="sans-serif">
+<rect width="480" height="320" fill="#ffffff"/>
+<rect x="0" y="252" width="480" height="68" fill="#c8a06a" opacity="0.55"/>
+<rect x="150" y="120" width="300" height="120" rx="6" fill="#efe6d8" stroke="#a87f4c" stroke-width="3"/>
+
+<path d="M150 120 l36 -18 M450 120 l-36 -18" fill="none" stroke="#a87f4c" stroke-width="3"/>
+<path d="M270 168 h60 l-6 52 a14 14 0 0 1 -14 12 h-20 a14 14 0 0 1 -14 -12 Z"
+      fill="#2f4b7c" stroke="#22345a" stroke-width="3"/>
+<ellipse cx="300" cy="168" rx="30" ry="9" fill="#ffffff" opacity="0.7" stroke="#2f4b7c" stroke-width="2.5"/>
+<path d="M270 188 q30 -14 60 0" fill="none" stroke="#f2d98c" stroke-width="4"/><circle cx="300" cy="176" r="6" fill="#f2d98c"/>
+<text x="24" y="46" font-size="22" font-weight="700" fill="#3a3a36">成品返寄 · 工作室装箱</text>
+<text x="24" y="74" font-size="14" fill="#777063">烧制完成，定制木框装裱，泡沫定型</text>
+<rect x="24" y="270" width="118" height="28" rx="14" fill="#2f4b7c"/>
+<text x="83" y="289" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">返程·已发出</text>
+</svg>

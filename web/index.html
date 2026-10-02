@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>手作工作室 · 材料包履约台</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="/assets/icons/turntable.svg">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <img src="/assets/icons/turntable.svg" alt="" width="34" height="34">
+    <div>
+      <h1>手作工作室 · 履约台</h1>
+      <p>材料包 · 作品回寄 · 烧制装裱 · 成品返寄</p>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="versions" class="tab active">课程版本</button>
+    <button data-tab="kits" class="tab">材料包清单</button>
+    <button data-tab="packing" class="tab">装箱核对</button>
+    <button data-tab="inbound" class="tab">作品回寄</button>
+    <button data-tab="processing" class="tab">加工进度</button>
+    <button data-tab="returns" class="tab">成品返寄</button>
+  </nav>
+</header>
+
+<main id="view" class="view"></main>
+
+<div id="toast" class="toast" hidden></div>
+<div id="modal" class="modal" hidden>
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 id="modalTitle"></h3>
+      <button class="link" id="modalClose">关闭</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>
