@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>手作课程履约台</title>
+<style>
+:root{
+  --indigo:#2f4b7c; --indigo-soft:#e3e9f2; --indigo-dark:#22385e;
+  --wood:#a9845b; --wood-soft:#f4ece2; --wood-light:#c99b6d;
+  --ink:#2b2b2b; --muted:#7d7468; --line:#e7e0d5;
+  --bg:#ffffff; --bg-warm:#fbf9f5;
+  --red:#b0432f; --red-soft:#f8e7e2; --green:#4c7a52; --green-soft:#e6f0e7;
+  --amber:#9c6f2e; --amber-soft:#f8efdd;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+  color:var(--ink);background:var(--bg);font-size:14px;line-height:1.55}
+header{background:#fff;border-bottom:2px solid var(--wood);
+  padding:0 28px;display:flex;align-items:center;gap:24px;position:sticky;top:0;z-index:10}
+.logo{font-weight:700;font-size:17px;color:var(--indigo);padding:16px 0;
+  display:flex;align-items:center;gap:10px;white-space:nowrap}
+.logo .mark{width:12px;height:22px;background:var(--wood-light);border-radius:2px;
+  box-shadow:14px 0 0 var(--indigo)}
+nav{display:flex;gap:4px}
+nav button{border:0;background:none;padding:18px 14px;font-size:14px;color:var(--muted);
+  cursor:pointer;border-bottom:3px solid transparent}
+nav button.active{color:var(--indigo);border-bottom-color:var(--indigo);font-weight:600}
+main{max-width:1180px;margin:0 auto;padding:24px 28px 60px}
+h2{font-size:18px;margin:0 0 4px;color:var(--indigo-dark)}
+h3{font-size:15px;margin:0 0 10px;color:var(--indigo-dark);
+  display:flex;align-items:center;gap:8px}
+.sub{color:var(--muted);margin:0 0 18px;font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.card{border:1px solid var(--line);border-radius:10px;background:#fff;padding:16px;
+  cursor:pointer;transition:box-shadow .15s,border-color .15s}
+.card:hover{box-shadow:0 4px 14px rgba(47,75,124,.1);border-color:var(--wood-light)}
+.card .row1{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.card .kitno{font-weight:700;color:var(--indigo)}
+.card .student{font-size:15px;font-weight:600;margin-top:2px}
+.card .meta{color:var(--muted);font-size:12px;margin-top:6px}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;
+  white-space:nowrap;font-weight:500}
+.b-created{background:#f0f0f0;color:#666}
+.b-packing{background:var(--amber-soft);color:var(--amber)}
+.b-packed{background:var(--indigo-soft);color:var(--indigo)}
+.b-shipped{background:var(--wood-soft);color:var(--wood)}
+.b-delivered{background:var(--green-soft);color:var(--green)}
+.b-damaged{background:var(--red-soft);color:var(--red)}
+.b-in_transit{background:var(--wood-soft);color:var(--wood)}
+.b-open{background:var(--red-soft);color:var(--red)}
+.b-resolved{background:var(--green-soft);color:var(--green)}
+.b-rejected{background:#f0f0f0;color:#777}
+.b-approved{background:var(--green-soft);color:var(--green)}
+.b-late{background:var(--red-soft);color:var(--red)}
+.panel{border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:16px;
+  background:#fff}
+.panel.warm{background:var(--bg-warm)}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:900px){.grid3{grid-template-columns:1fr}}
+.lane{border:1px dashed var(--line);border-radius:8px;padding:12px;background:#fff}
+.lane h4{margin:0 0 8px;font-size:13px;color:var(--wood);letter-spacing:1px}
+.waybill{border-left:3px solid var(--indigo);padding:6px 10px;margin:8px 0;
+  background:var(--bg-warm);border-radius:0 6px 6px 0;font-size:13px}
+.waybill.damage{border-left-color:var(--red)}
+.waybill .wb-no{font-family:monospace;font-weight:700;color:var(--indigo-dark)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:12px;color:var(--muted);font-weight:600;
+  padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid #f2ede4;vertical-align:middle;font-size:13px}
+.thumb{width:46px;height:46px;border-radius:8px;vertical-align:middle;
+  border:1px solid var(--line);background:#fff}
+.item-cell{display:flex;align-items:center;gap:10px}
+.item-name{font-weight:600}
+.tag{font-size:11px;padding:1px 7px;border-radius:4px;background:var(--indigo-soft);
+  color:var(--indigo);margin-left:6px}
+.tag.sub{background:var(--amber-soft);color:var(--amber)}
+.tag.cat{background:var(--wood-soft);color:var(--wood)}
+button.btn{border:1px solid var(--indigo);background:var(--indigo);color:#fff;
+  padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px}
+button.btn:hover{background:var(--indigo-dark)}
+button.btn.ghost{background:#fff;color:var(--indigo)}
+button.btn.ghost:hover{background:var(--indigo-soft)}
+button.btn.wood{border-color:var(--wood);background:var(--wood)}
+button.btn.wood:hover{background:#8f6f4c}
+button.btn.mini{padding:3px 10px;font-size:12px}
+button.btn:disabled{opacity:.45;cursor:not-allowed}
+.qty-input{width:52px;padding:4px 6px;border:1px solid var(--line);border-radius:5px;
+  text-align:center}
+.exc{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:8px 0;
+  display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fff}
+.exc.open{border-color:#e5b9ad;background:var(--red-soft)}
+.exc .t{font-weight:600}
+.exc .d{color:var(--muted);font-size:12px;margin-top:2px}
+.confirmers{display:flex;gap:10px;margin-top:10px}
+.confirmer{flex:1;border:1px solid var(--line);border-radius:8px;padding:10px;
+  text-align:center;background:var(--bg-warm)}
+.confirmer.done{background:var(--green-soft);border-color:#bcd4bf}
+.confirmer .role{font-size:12px;color:var(--muted)}
+.confirmer .who{font-weight:700;margin-top:3px}
+.back{border:0;background:none;color:var(--indigo);cursor:pointer;padding:0;
+  font-size:13px;margin-bottom:12px}
+.back:hover{text-decoration:underline}
+.photos{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:760px){.photos{grid-template-columns:1fr}}
+.photo-box{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.photo-box img{width:100%;display:block}
+.photo-box .cap{padding:7px 10px;font-size:12px;color:var(--muted);
+  display:flex;justify-content:space-between;gap:8px}
+.photo-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.pair-label{font-size:12px;color:var(--muted);margin:2px 0 4px}
+.vers{border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:12px;background:#fff}
+.vers .head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.vers ul{margin:8px 0 0;padding-left:18px;font-size:13px;color:#444}
+.locked{color:var(--green);font-weight:600}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);
+  background:var(--indigo-dark);color:#fff;padding:10px 20px;border-radius:8px;
+  font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:80vw}
+.toast.show{opacity:.96}
+.toast.err{background:var(--red)}
+.audit{font-family:monospace;font-size:12px}
+.audit div{padding:5px 8px;border-bottom:1px solid #f2ede4;display:flex;gap:10px}
+.audit .at{color:var(--muted);white-space:nowrap}
+.claim{border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:10px;background:#fff}
+.claim .top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.amt{color:var(--red);font-weight:700}
+.muted{color:var(--muted)}
+.flash-inline{color:var(--red);font-size:12px;margin-top:6px}
+.timeline-stage{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:6px 0}
+.stage-chip{padding:3px 10px;border-radius:20px;font-size:12px;background:#f0f0f0;color:#888}
+.stage-chip.on{background:var(--indigo);color:#fff}
+.stage-chip .arrow{color:var(--muted);margin-left:8px}
+.seg-title{font-size:12px;color:var(--muted);margin:10px 0 4px}
+.addr{background:var(--wood-soft);border-radius:6px;padding:8px 10px;font-size:13px}
+label.chk{font-size:12px;color:var(--muted);display:inline-flex;gap:4px;align-items:center}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><span class="mark"></span>手作课程履约台</div>
+  <nav>
+    <button data-tab="kits" class="active">材料包</button>
+    <button data-tab="versions">课程版本</button>
+    <button data-tab="claims">索赔与留痕</button>
+  </nav>
+</header>
+<main id="app"></main>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c =>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let STATE = null, TAB = 'kits', CURRENT_KIT = null;
+
+const STATUS_CN = {created:'待装箱',packing:'打包中',packed:'已封箱',
+  shipped:'已发货',delivered:'已签收',in_transit:'运输中',damaged:'已破损',
+  received:'已收件',queued:'排队中',in_progress:'加工中',qa:'质检中',done:'已完成'};
+const CAT_CN = {tool:'工具',consumable:'消耗品',color:'颜色选择'};
+const SHIP_CN = {kit_outbound:'材料包去程',work_inbound:'作品回寄',
+  finish_outbound:'成品返寄'};
+const STAGES = ['received','queued','in_progress','qa','done'];
+const STAGE_CN = {received:'作品签收',queued:'加工排队',in_progress:'烧制/装裱中',
+  qa:'质检',done:'完成'};
+
+async function load(){
+  const r = await fetch('/api/state');
+  STATE = (await r.json()).data;
+  render();
+}
+async function act(path, payload){
+  const r = await fetch(path, {method:'POST',
+    headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload||{})});
+  const j = await r.json();
+  if(!j.ok){ toast(j.error, true); return false; }
+  toast('操作成功');
+  await load();
+  return true;
+}
+let toastTimer;
+function toast(msg, err){
+  const t = $('#toast');
+  t.textContent = msg; t.className = 'toast show' + (err ? ' err' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.className='toast', 2600);
+}
+const askName = (who) => prompt(`请输入${who}姓名：`, who === '复核员' ? '老沈' : '阿珍') || null;
+
+// ------------------------------------------------------------------ 渲染
+function render(){
+  document.querySelectorAll('nav button').forEach(b =>
+    b.classList.toggle('active', b.dataset.tab === TAB));
+  if(TAB === 'kits') CURRENT_KIT ? renderKit() : renderKitList();
+  if(TAB === 'versions') renderVersions();
+  if(TAB === 'claims') renderClaims();
+}
+const badge = (s,txt) => `<span class="badge b-${s}">${esc(txt ?? STATUS_CN[s] ?? s)}</span>`;
+
+function renderKitList(){
+  const openCount = k => k.exceptions.filter(e=>e.status==='open').length;
+  $('#app').innerHTML = `
+    <h2>材料包</h2>
+    <p class="sub">材料包按报名唯一生成，装箱需打包员与复核员双人确认；点击卡片进入清单、装箱核对与履约进度。</p>
+    <div class="cards">
+      ${STATE.kits.map(k=>`
+        <div class="card" onclick="openKit('${k.kit.kit_no}')">
+          <div class="row1">
+            <span class="kitno">${esc(k.kit.kit_no)}</span>
+            ${badge(k.kit.status)}
+          </div>
+          <div class="student">${esc(k.kit.student_name)} · ${esc(k.kit.course_name)} ${esc(k.kit.version_label)}</div>
+          <div class="meta">
+            收货：${esc(k.kit.address)}<br>
+            运单 ${k.shipments.length} 张 ·
+            确认 ${k.confirmations.length}/2
+            ${openCount(k) ? ` · <b style="color:var(--red)">待处理异常 ${openCount(k)}</b>` : ''}
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+window.openKit = no => { CURRENT_KIT = no; render(); };
+window.backList = () => { CURRENT_KIT = null; render(); };
+
+function renderKit(){
+  const k = STATE.kits.find(x => x.kit.kit_no === CURRENT_KIT);
+  if(!k){ CURRENT_KIT = null; return render(); }
+  const catGroup = cat => k.lines.filter(l => l.category === cat);
+  const lineRow = l => {
+    const editable = ['created','packing'].includes(k.kit.status);
+    const subTag = l.is_substitute
+      ? `<span class="tag sub">替代色${l.color_confirmed ? '·已确认' : '·待确认'}</span>` : '';
+    return `<tr>
+      <td><div class="item-cell">
+        <img class="thumb" src="/static/img/${esc(l.thumbnail)}" alt="">
+        <div><div class="item-name">${esc(l.name)}${subTag}</div>
+        <div class="muted" style="font-size:12px">${esc(l.item_id)}
+          <span class="tag cat">${CAT_CN[l.category]}</span>
+          ${l.color_role ? `<span class="tag">${esc(l.color_role)}</span>` : ''}
+        </div></div>
+      </div></td>
+      <td style="width:90px;text-align:center">${l.planned_qty} ${esc(l.unit)}</td>
+      <td style="width:150px;text-align:center">
+        ${editable ? `<input class="qty-input" type="number" min="0" max="${l.planned_qty}"
+          value="${l.packed_qty}" id="q-${esc(l.item_id)}">
+          <button class="btn mini ghost" onclick="checkLine('${k.kit.kit_no}','${esc(l.item_id)}')">勾选</button>`
+        : `${l.packed_qty} ${esc(l.unit)} ${l.packed_qty>=l.planned_qty ? '✅' : '⚠️'}`}
+      </td>
+    </tr>`;
+  };
+  const conf = role => k.confirmations.find(c=>c.role===role);
+  const packer = conf('packer'), checker = conf('checker');
+  const canConfirm = ['created','packing'].includes(k.kit.status);
+  const openExcs = k.exceptions.filter(e=>e.status==='open');
+
+  $('#app').innerHTML = `
+    <button class="back" onclick="backList()">← 返回材料包列表</button>
+    <h2>${esc(k.kit.kit_no)} · ${esc(k.kit.student_name)}</h2>
+    <p class="sub">${esc(k.kit.course_name)} ${esc(k.kit.version_label)}
+      · 报名 ${esc(k.kit.enrollment_id)} · 状态 ${badge(k.kit.status)}
+      <span class="locked">🔒 清单已按 ${esc(k.kit.version_label)} 锁定快照</span></p>
+
+    <div class="panel">
+      <h3>📦 材料包清单与装箱核对</h3>
+      <table>
+        <thead><tr><th>物品（缩略图）</th><th style="text-align:center">应发数量</th>
+        <th style="text-align:center">实发勾选</th></tr></thead>
+        <tbody>
+          <tr><td colspan="3" class="muted" style="font-weight:600">🧰 工具</td></tr>
+          ${catGroup('tool').map(lineRow).join('')}
+          <tr><td colspan="3" class="muted" style="font-weight:600">🟫 消耗品</td></tr>
+          ${catGroup('consumable').map(lineRow).join('')}
+          <tr><td colspan="3" class="muted" style="font-weight:600">🎨 颜色选择</td></tr>
+          ${catGroup('color').map(lineRow).join('')}
+        </tbody>
+      </table>
+      <div class="confirmers">
+        <div class="confirmer ${packer?'done':''}">
+          <div class="role">打包员确认</div>
+          <div class="who">${packer ? esc(packer.packer)+' ✓' : '—'}</div>
+        </div>
+        <div class="confirmer ${checker?'done':''}">
+          <div class="role">复核员确认（须为另一个人）</div>
+          <div class="who">${checker ? esc(checker.packer)+' ✓' : '—'}</div>
+        </div>
+      </div>
+      <div class="actions">
+        ${canConfirm && !packer ? `<button class="btn wood" onclick="confirmPack('${k.kit.kit_no}','packer')">打包员确认</button>`:''}
+        ${canConfirm && packer && !checker ? `<button class="btn" onclick="confirmPack('${k.kit.kit_no}','checker')">复核员确认封箱</button>`:''}
+        ${k.kit.status==='packed' ? `<button class="btn" onclick="act('/api/kits/${k.kit.kit_no}/ship-kit',{actor:'packer'})">发出材料包（生成去程运单）</button>`:''}
+      </div>
+    </div>
+
+    ${openExcs.length || k.exceptions.length ? `
+    <div class="panel warm">
+      <h3>📝 异常留痕（缺件 / 替代色 / 迟交 / 破损）</h3>
+      ${k.exceptions.map(e=>`
+        <div class="exc ${e.status==='open'?'open':''}">
+          <div>
+            <div class="t">${esc(e.title)} ${badge(e.status, e.status==='open'?'待处理':e.status==='resolved'?'已处理':'已驳回')}</div>
+            <div class="d">${esc(e.description||'')} · 登记人 ${esc(e.created_by)} · ${esc(e.created_at)}</div>
+          </div>
+          <div class="actions" style="margin:0">
+            ${e.status==='open' && e.type==='color_substitute' ? `
+              <button class="btn mini" onclick="colorConfirm('${k.kit.kit_no}','${esc(e.item_id)}',true)">学员接受</button>
+              <button class="btn mini ghost" onclick="colorConfirm('${k.kit.kit_no}','${esc(e.item_id)}',false)">学员拒绝</button>`:''}
+            ${e.status==='open' && e.type==='missing' ? `
+              <button class="btn mini wood" onclick="act('/api/exceptions/${e.exception_id}/resolve',{resolution:'backfill 已补发',actor:'仓管'})">登记补发并关闭</button>`:''}
+            ${e.status==='open' && e.type==='transit_damage' ? `
+              <button class="btn mini" onclick="fileClaimUi(${k.shipments.filter(s=>s.direction==='work_inbound').slice(-1)[0]?.shipment_id || 0})">提交损坏索赔</button>`:''}
+            ${e.status==='open' ? `<button class="btn mini ghost" onclick="act('/api/exceptions/${e.exception_id}/resolve',{resolution:'noted 已知悉',actor:'主管'})">仅记录关闭</button>`:''}
+          </div>
+        </div>`).join('')}
+    </div>`:''}
+
+    ${renderProgress(k)}
+    ${renderPhotos(k)}
+  `;
+}
+
+function renderProgress(k){
+  const ship = dir => k.shipments.filter(s=>s.direction===dir);
+  const wb = s => `<div class="waybill ${s.status==='damaged'?'damage':''}">
+      <div><span class="wb-no">${esc(s.waybill)}</span>
+        ${badge(s.status)} ${s.late?'<span class="badge b-late">迟交</span>':''}</div>
+      <div class="muted">${esc(s.from_addr)} → ${esc(s.to_addr)}</div>
+      <div class="muted">${esc(s.shipped_at||'')} ${s.delivered_at? '· 签收 '+esc(s.delivered_at):''}</div>
+      <div class="actions" style="margin:6px 0 2px">
+        ${s.status==='in_transit' && s.direction==='kit_outbound' ? `
+          <button class="btn mini ghost" onclick="act('/api/shipments/${s.shipment_id}/deliver',{})">确认送达</button>`:''}
+        ${s.status==='in_transit' && s.direction==='work_inbound' ? `
+          <button class="btn mini ghost" onclick="act('/api/shipments/${s.shipment_id}/deliver',{})">完好签收</button>
+          <button class="btn mini" style="border-color:var(--red);background:var(--red)"
+            onclick="act('/api/shipments/${s.shipment_id}/deliver',{damaged:true,actor:'courier'})">破损签收</button>`:''}
+        ${s.status==='in_transit' && s.direction==='finish_outbound' ? `
+          <button class="btn mini ghost" onclick="act('/api/shipments/${s.shipment_id}/deliver',{})">学员签收</button>`:''}
+      </div>
+    </div>`;
+  const job = k.job;
+  const stageIdx = job ? STAGES.indexOf(job.status) : -1;
+  const next = job && stageIdx < STAGES.length-1 ? STAGES[stageIdx+1] : null;
+  const inboundOk = ship('work_inbound').some(s=>s.status==='delivered');
+
+  return `
+  <div class="panel">
+    <h3>🚚 履约进度（去程 · 加工 · 返程，分别运单）</h3>
+    <div class="grid3">
+      <div class="lane">
+        <h4>去程｜材料包 → 学员</h4>
+        ${ship('kit_outbound').length ? ship('kit_outbound').map(wb).join('')
+          : '<div class="muted">尚未发货</div>'}
+        <div class="seg-title">收货地址（变更全程留痕）</div>
+        <div class="addr">${esc(k.kit.address)}
+          <div style="margin-top:6px">
+            <button class="btn mini ghost" onclick="changeAddr('${esc(k.kit.enrollment_id)}')">变更返寄地址</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="lane">
+        <h4>加工｜烧制 / 装裱</h4>
+        ${job ? `
+          <div class="timeline-stage">
+            ${STAGES.map((s,i)=>`<span class="stage-chip ${i<=stageIdx?'on':''}">
+              ${STAGE_CN[s]}${i<STAGES.length-1?'<span class="arrow">→</span>':''}</span>`).join('')}
+          </div>
+          ${k.job_events?.length ? k.job_events.map(ev=>
+            `<div class="waybill"><b>${esc(STAGE_CN[ev.stage]||ev.stage)}</b>
+             <span class="muted">${esc(ev.at)}</span><br>
+             <span class="muted">${esc(ev.note||'')}</span></div>`).join('') : ''}
+        ` : '<div class="muted">作品尚未回到工作室</div>'}
+        <div class="actions">
+          ${['delivered'].includes(k.kit.status) && !job ? `
+            <label class="chk"><input type="checkbox" id="late-${k.kit.kit_no}">迟交</label>
+            <button class="btn mini wood" onclick="sendWork('${k.kit.kit_no}')">学员寄回作品（新运单）</button>`:''}
+          ${inboundOk && !job ? `
+            <select id="svc-${k.kit.kit_no}" class="qty-input" style="width:auto">
+              <option value="firing">烧制</option><option value="framing">装裱</option>
+            </select>
+            <button class="btn mini wood" onclick="receiveWork('${k.kit.kit_no}')">签收并建加工单</button>`:''}
+          ${next ? `<button class="btn mini" onclick="act('/api/kits/${k.kit.kit_no}/advance-job',
+            {stage:'${next}',note:prompt('阶段备注（可留空）','')||''})">推进到「${STAGE_CN[next]}」</button>`:''}
+        </div>
+      </div>
+
+      <div class="lane">
+        <h4>返程｜作品回寄 + 成品返寄</h4>
+        <div class="seg-title">作品回寄（学员 → 工作室）</div>
+        ${ship('work_inbound').length ? ship('work_inbound').map(wb).join('')
+          : '<div class="muted">—</div>'}
+        <div class="seg-title">成品返寄（工作室 → 学员，独立运单）</div>
+        ${ship('finish_outbound').length ? ship('finish_outbound').map(wb).join('')
+          : '<div class="muted">—</div>'}
+        <div class="actions">
+          ${job && job.status==='done' && !ship('finish_outbound').length ? `
+            <button class="btn" onclick="act('/api/kits/${k.kit.kit_no}/ship-finished',{})">返寄成品（新运单，按最新地址）</button>`:''}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderPhotos(k){
+  const byKind = (...ks) => k._photos ? k._photos.filter(p=>ks.includes(p.kind)) : [];
+  const box = (p,label) => p ? `<div class="photo-box">
+      <img src="/${esc(p.file_path)}" alt="${esc(p.caption||'')}">
+      <div class="cap"><span>${label} · ${esc(p.caption||'')}</span>
+      <span>${esc((p.uploaded_at||'').slice(0,16))}</span></div></div>`
+    : `<div class="photo-box" style="display:flex;align-items:center;
+        justify-content:center;min-height:120px">
+        <span class="muted">暂无${label}照片</span></div>`;
+  const segment = (title, kinds, aLabel, bLabel) => {
+    const a = byKind(...kinds).slice(-1)[0];
+    const b = byKind(...kinds.slice(1)).slice(-1)[0];
+    if(!a && !b) return '';
+    if(kinds.length === 1){
+      return `<div class="seg-title">${title}</div>
+        <div class="photo-pair" style="grid-template-columns:1fr">${box(a,aLabel)}</div>`;
+    }
+    return `<div class="seg-title">${title}</div>
+      <div class="photo-pair">${box(a,aLabel)}${box(b,bLabel)}</div>`;
+  };
+  const upBtn = (kind, sid) =>
+    `<label class="btn mini ghost">＋上传${({kit_outbound:'去程照片',return_inbound:'回寄照片',
+      damage:'损坏照片',finish_outbound:'成品寄出照',finish_returned:'收回成品照'})[kind]}
+      <input type="file" accept="image/*" style="display:none"
+      onchange="uploadPhoto(this,'${kind}',${sid??'null'},'${k.kit.kit_no}')"></label>`;
+  return `
+  <div class="panel warm">
+    <h3>📷 作品照片（本地存储，可比较寄出与收回状态）</h3>
+    ${segment('去程｜材料包寄出', ['kit_outbound'], '材料包寄出', '—')}
+    ${segment('作品回寄｜学员寄出 ↔ 工作室收回',
+      ['return_inbound','damage'], '学员寄出时', '工作室收回时')}
+    ${segment('返程｜成品寄出 ↔ 学员收回',
+      ['finish_outbound','finish_returned'], '成品寄出时', '学员收回时')}
+    <div class="actions">
+      ${upBtn('kit_outbound')}${upBtn('return_inbound')}
+      ${upBtn('damage')}${upBtn('finish_outbound')}${upBtn('finish_returned')}
+    </div>
+  </div>`;
+}
+
+function renderVersions(){
+  $('#app').innerHTML = `
+    <h2>课程版本</h2>
+    <p class="sub">课程改版只影响之后新生成的材料包；已发材料包保留各自版本的清单快照（版本锁定）。</p>
+    ${STATE.versions.map(v=>{
+      const kitCount = STATE.kits.filter(k=>k.kit.version_id===v.version_id).length;
+      return `<div class="vers">
+        <div class="head">
+          <div><b>${esc(v.version_label)}</b>
+            <span class="muted">${esc(v.version_id)} · ${esc(v.notes||'')}</span></div>
+          <span class="muted">已锁定材料包 ${kitCount} 个 · 发布于 ${esc(v.created_at)}</span>
+        </div>
+        <ul>${v.items.map(it=>`<li>${esc(it.name)}
+          <span class="tag cat">${CAT_CN[it.category]}</span>
+          × ${it.qty} ${esc(it.unit)}
+          ${it.color_role?`<span class="tag">${esc(it.color_role)}</span>`:''}</li>`).join('')}
+        </ul>
+      </div>`;
+    }).join('')}`;
+}
+
+function renderClaims(){
+  const claimBox = c => {
+    const wb = STATE.kits.flatMap(k=>k.shipments)
+      .find(s=>s.shipment_id===c.shipment_id);
+    return `<div class="claim">
+      <div class="top">
+        <div><b>${esc(c.title)}</b> ${badge(c.status,
+          c.status==='open'?'待审批':c.status==='approved'?'已批准':'已驳回')}
+          <div class="muted" style="margin-top:3px">${esc(c.kit_no)} ·
+            运单 ${wb?esc(wb.waybill):c.shipment_id}
+            （${wb?esc(SHIP_CN[wb.direction]):''}）· ${esc(c.created_at)}</div>
+        </div>
+        <div class="amt">¥${c.amount}</div>
+      </div>
+      <div class="muted" style="margin:6px 0">${esc(c.description||'')}</div>
+      ${c.status==='open' ? `<div class="actions">
+        <button class="btn mini" onclick="act('/api/claims/${c.claim_id}/resolve',
+          {approved:true,resolution:'赔付并补发包装',actor:'主管'})">批准赔付</button>
+        <button class="btn mini ghost" onclick="act('/api/claims/${c.claim_id}/resolve',
+          {approved:false,resolution:'证据不足',actor:'主管'})">驳回</button></div>`
+        : `<div class="muted">处理结果：${esc(c.resolution||'')} · ${esc(c.resolved_by||'')}</div>`}
+    </div>`;
+  };
+  $('#app').innerHTML = `
+    <h2>索赔与留痕</h2>
+    <p class="sub">运输损坏可对破损运单提出索赔；所有关键动作另记审计日志。</p>
+    <h3>损坏索赔</h3>
+    ${STATE.claims.length ? STATE.claims.map(claimBox).join('')
+      : '<p class="muted">暂无索赔。</p>'}
+    <h3 style="margin-top:22px">审计日志（最近 60 条）</h3>
+    <div class="panel audit" style="padding:6px 10px">
+      ${STATE.audit.map(a=>`<div><span class="at">${esc(a.at)}</span>
+        <b>${esc(a.actor)}</b> ${esc(a.action)}
+        <span class="muted">${esc(a.entity)}${a.entity_id?':'+esc(a.entity_id):''}</span>
+        ${a.detail?`<span>${esc(a.detail)}</span>`:''}</div>`).join('')}
+    </div>`;
+}
+
+// ------------------------------------------------------------------ 操作
+window.checkLine = async (no, iid) => {
+  const v = parseInt(document.getElementById('q-'+iid).value, 10);
+  await act(`/api/kits/${no}/lines/${encodeURIComponent(iid)}/check`,
+    {packed_qty: v, actor:'打包员'});
+};
+window.confirmPack = async (no, role) => {
+  const name = askName(role==='packer'?'打包员':'复核员');
+  if(!name) return;
+  await act(`/api/kits/${no}/confirm`, {packer:name, role, actor:name});
+};
+window.colorConfirm = (no, iid, ok) =>
+  act(`/api/kits/${no}/color-confirm`, {item_id:iid, accepted:ok, actor:'学员'});
+window.sendWork = (no) => act(`/api/kits/${no}/send-work`,
+  {late: document.getElementById('late-'+no).checked, actor:'学员'});
+window.receiveWork = (no) => act(`/api/kits/${no}/receive-work`,
+  {service_type: document.getElementById('svc-'+no).value, actor:'工作室'});
+window.changeAddr = async (eid) => {
+  const addr = prompt('请输入新的返寄地址：');
+  if(!addr) return;
+  const reason = prompt('变更原因（可留空）：','') || '';
+  await act(`/api/enrollments/${eid}/address`, {address:addr, reason, actor:'学员'});
+};
+window.fileClaimUi = async sid => {
+  if(!sid){ toast('缺少回寄运单', true); return; }
+  const title = prompt('索赔标题：','回寄作品运输损坏索赔');
+  if(!title) return;
+  const amount = parseInt(prompt('索赔金额（元）：','200'),10) || 0;
+  await act(`/api/shipments/${sid}/claims`,
+    {title, amount, description:'签收时发现运输损坏', actor:'学员'});
+};
+window.uploadPhoto = async (input, kind, sid, kit) => {
+  const f = input.files[0]; if(!f) return;
+  const dataUrl = await new Promise(res => {
+    const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(f);
+  });
+  const ok = await act('/api/photos',
+    {kind, data:dataUrl, kit_no:kit, shipment_id:sid, caption:f.name});
+  if(ok) await loadPhotos(kit);
+};
+async function loadPhotos(kit){
+  const r = await fetch(`/api/kits/${kit}/photos`);
+  const j = await r.json();
+  const cur = STATE.kits.find(x=>x.kit.kit_no===kit);
+  cur._photos = j.data;
+  render();
+}
+
+document.querySelectorAll('nav button').forEach(b =>
+  b.addEventListener('click', () => { TAB = b.dataset.tab; CURRENT_KIT = null; render(); }));
+
+load().then(async () => {
+  // 为当前种子中的材料包载入照片
+  for(const k of STATE.kits) await loadPhotos(k.kit.kit_no);
+  render();
+});
+</script>
+</body>
+</html>
